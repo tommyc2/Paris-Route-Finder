@@ -1,4 +1,4 @@
-package com.example.parisroutefinder.models;
+package models;
 
 public class Pixel {
 

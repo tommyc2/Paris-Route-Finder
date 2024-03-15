@@ -1,12 +1,11 @@
-package com.example.parisroutefinder.controllers;
+package controllers;
 
-import com.example.parisroutefinder.utils.Utilities;
-import com.example.parisroutefinder.main.Driver;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import main.Driver;
+import utils.Utilities;
 
 import java.io.File;
 

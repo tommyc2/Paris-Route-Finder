@@ -1,4 +1,4 @@
-package com.example.parisroutefinder.models;
+package models;
 
 import java.util.ArrayList;
 import java.util.List;
