@@ -1,4 +1,4 @@
-package com.example.parisroutefinder;
+package com.example.parisroutefinder.utils;
 
 import javafx.scene.image.Image;
 

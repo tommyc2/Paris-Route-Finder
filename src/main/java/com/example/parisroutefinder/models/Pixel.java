@@ -1,10 +1,11 @@
-package com.example.parisroutefinder;
+package com.example.parisroutefinder.models;
 
-public class PillXY {
+public class Pixel {
 
-    private int x = 0;
-    private int y = 0;
-    public PillXY(int x, int y){
+    private int x;
+    private int y;
+    
+    public Pixel(int x, int y){
         this.x = x;
         this.y = y;
     }

@@ -1,4 +1,4 @@
-package com.example.parisroutefinder;
+package com.example.parisroutefinder.main;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +14,7 @@ public class Driver extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Driver.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 1200);
-        stage.setTitle("City of Paris Route Finder!");
+        stage.setTitle("City of Paris Route Finder");
         stage.setScene(scene);
         stage.show();
     }
