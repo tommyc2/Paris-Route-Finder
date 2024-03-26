@@ -38,7 +38,7 @@
                   <Font size="15.0" />
                </font>
             </Text>
-            <Button layoutX="1019.0" layoutY="286.0" mnemonicParsing="false" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" onAction="#processBitmap" />
+            <Button layoutX="1019.0" layoutY="286.0" mnemonicParsing="false" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" onAction="#plotPointsWithLabels" />
             <Button layoutX="858.0" layoutY="380.0" mnemonicParsing="false" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
             <Button layoutX="14.0" layoutY="622.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-text-fill: black; -fx-background-radius: 15;" text="Reset Map" onAction="#resetMap"/>
             <Text fill="WHITE" layoutX="858.0" layoutY="152.0" strokeType="OUTSIDE" strokeWidth="0.0" />
