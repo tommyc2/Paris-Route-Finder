@@ -23,8 +23,8 @@
                   <Font size="15.0" />
                </font>
             </Text>
-            <ChoiceBox layoutX="858.0" layoutY="76.0" prefHeight="43.0" prefWidth="136.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
-            <ChoiceBox layoutX="1018.0" layoutY="76.0" prefHeight="43.0" prefWidth="136.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
+            <ChoiceBox layoutX="858.0" layoutY="76.0" prefHeight="43.0" prefWidth="136.0" fx:id="startChoiceBox" style="-fx-background-color: white; -fx-background-radius: 15;" />
+            <ChoiceBox layoutX="1018.0" layoutY="76.0" prefHeight="43.0" prefWidth="136.0" fx:id="endChoiceBox" style="-fx-background-color: white; -fx-background-radius: 15;" />
             <Text fill="WHITE" layoutX="858.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Start:" />
             <Text fill="WHITE" layoutX="1018.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dest:" />
             <Text fill="WHITE" layoutX="857.0" layoutY="271.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generate Shortest Route">

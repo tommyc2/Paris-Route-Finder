@@ -1,4 +1,6 @@
 package controllers;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -34,6 +36,16 @@ public class Controller {
     public List<GraphNode<LandmarkNode>> landmarkNodes = new ArrayList<>();
 
     public List<Integer> imageArray = new ArrayList<>();
+
+    @FXML
+    private ChoiceBox<String> startChoiceBox;
+    @FXML
+    private ChoiceBox<String> endChoiceBox;
+
+    public void initialize() throws IOException {
+        loadData(); // Ensure this is called before trying to populate the ComboBoxes
+        populateChoiceBoxes();
+    }
 
     public void addLandmarkLinks(){
 
@@ -188,6 +200,32 @@ public class Controller {
             ap.getChildren().add(label);
         }
         addLandmarkLinks();
+    }
+
+    private void populateChoiceBoxes() {
+        ObservableList<String> landmarkNames = FXCollections.observableArrayList();
+        for (GraphNode<LandmarkNode> node : landmarkNodes) {
+            landmarkNames.add(node.data.getName());
+        }
+
+        startChoiceBox.setItems(landmarkNames);
+        endChoiceBox.setItems(landmarkNames);
+    }
+
+    @FXML
+    private void handleGenerateShortestRoute(ActionEvent event) {
+        String startLandmarkName = startChoiceBox.getValue();
+        String endLandmarkName = endChoiceBox.getValue();
+
+        // Code to initiate shortest path calculation...
+    }
+
+    @FXML
+    private void handleGenerateCulturalRoute(ActionEvent event) {
+        String startLandmarkName = startChoiceBox.getValue();
+        String endLandmarkName = endChoiceBox.getValue();
+
+        // Code to initiate cultural route calculation...
     }
 
 
