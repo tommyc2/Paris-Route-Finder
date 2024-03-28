@@ -9,24 +9,18 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import main.Driver;
-import models.GraphLink;
 import models.GraphNode;
 import models.LandmarkNode;
 import models.Pixel;
 import utils.GraphAPI;
-import utils.Utilities;
 import javafx.scene.layout.AnchorPane;
 import javafx.event.ActionEvent;
 import java.io.*;
 import java.util.*;
-import java.io.File;
+
 import javafx.scene.control.*;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 
 public class Controller {
@@ -36,6 +30,11 @@ public class Controller {
     public List<GraphNode<LandmarkNode>> landmarkNodes = new ArrayList<>();
 
     public List<Integer> imageArray = new ArrayList<>();
+    public Text titleText;
+    public Text startText;
+    public Text destinationText;
+    public Text generateShortestRouteText;
+    public Text generateMostHistoricalRouteText;
 
     @FXML
     private ChoiceBox<String> startChoiceBox;
@@ -45,8 +44,14 @@ public class Controller {
     public void initialize() throws IOException {
         loadData(); // Ensure this is called before trying to populate the ComboBoxes
         populateChoiceBoxes();
-    }
+        plotPointsWithLabels();
+        addLandmarkLinks();
 
+        // Testing DFS Lines on map
+       //List<GraphNode<?>> path = GraphAPI.findPathDepthFirst(landmarkNodes.get(0),null,landmarkNodes.get(7).data);
+        //drawLinesBetweenLandmarkNodes(path);
+    }
+    @Provisional
     public void addLandmarkLinks(){
 
         ///////////////////////////////////////////
@@ -75,6 +80,7 @@ public class Controller {
         GraphNode<LandmarkNode> d = landmarkNodes.get(19);
 
         eiffelTower.connectToNodeUndirected(arcdetriomphe, GraphAPI.calculateCostOfEdge(eiffelTower,arcdetriomphe));
+        eiffelTower.connectToNodeUndirected(a,GraphAPI.calculateCostOfEdge(eiffelTower,a));
         arcdetriomphe.connectToNodeUndirected(champselysees, GraphAPI.calculateCostOfEdge(arcdetriomphe,champselysees));
         champselysees.connectToNodeUndirected(pontalexandre, GraphAPI.calculateCostOfEdge(champselysees,pontalexandre));
         pontalexandre.connectToNodeUndirected(concorde, GraphAPI.calculateCostOfEdge(pontalexandre,concorde));
@@ -90,6 +96,7 @@ public class Controller {
         notredame.connectToNodeUndirected(pantheon, GraphAPI.calculateCostOfEdge(notredame,pantheon));
         lux.connectToNodeUndirected(a, GraphAPI.calculateCostOfEdge(lux,a));
         a.connectToNodeUndirected(c, GraphAPI.calculateCostOfEdge(a,c));
+        pontalexandre.connectToNodeUndirected(musee,GraphAPI.calculateCostOfEdge(pontalexandre,musee));
         c.connectToNodeUndirected(d, GraphAPI.calculateCostOfEdge(c,d));
         d.connectToNodeUndirected(pantheon, GraphAPI.calculateCostOfEdge(d,pantheon));
         b.connectToNodeUndirected(d, GraphAPI.calculateCostOfEdge(b,d));
@@ -120,14 +127,6 @@ public class Controller {
                     pixelWriter.setColor(xcoord, ycoord, Color.WHITE);
                     imageArray.add(0);
                 }
-                else if(colorOfPixel.equals(Color.WHITE)){
-                    pixelWriter.setColor(xcoord, ycoord, Color.WHITE);
-                    imageArray.add(0);
-                }
-                else{
-                    pixelWriter.setColor(xcoord,ycoord,Color.BLACK);
-                    imageArray.add(1);
-                }
 
             }
         }
@@ -148,14 +147,9 @@ public class Controller {
     }
 
     public void resetMap(){
-
-        //TODO -->  Try and remove text on image only e.g. not remove every text label in the scene which its doing rn
-
         AnchorPane anchorPane = (AnchorPane) imageView.getParent();
-        anchorPane.getChildren().removeIf(component -> component instanceof Rectangle);
-        anchorPane.getChildren().removeIf(component -> component instanceof Label);
         anchorPane.getChildren().removeIf(component -> component instanceof Circle);
-        imageView.setEffect(null);
+        anchorPane.getChildren().removeIf(component -> component instanceof Line);
     }
 
 /* loading in data from csv */
@@ -174,19 +168,15 @@ public class Controller {
             System.out.println("Number of nodes: " + landmarkNodes.size());
         }
         catch(IOException error){
-            System.out.println(error);
+            System.out.println("Error occured when loading data: "+error);
         }
     }
 
     public void plotPointsWithLabels(){
-        try {
-            loadData();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
         for(GraphNode<LandmarkNode> node : this.landmarkNodes){
             Rectangle rect = new Rectangle(node.data.getX(),node.data.getY(),7,7);
-            rect.setFill(Color.DARKRED);
+            rect.setFill(Color.BLACK);
             rect.setLayoutY(imageView.getLayoutY());
             rect.setLayoutX(imageView.getLayoutX());
             Text label = new Text();
@@ -199,7 +189,6 @@ public class Controller {
             ap.getChildren().add(rect);
             ap.getChildren().add(label);
         }
-        addLandmarkLinks();
     }
 
     private void populateChoiceBoxes() {
@@ -226,6 +215,52 @@ public class Controller {
         String endLandmarkName = endChoiceBox.getValue();
 
         // Code to initiate cultural route calculation...
+    }
+
+    @Provisional
+    public void drawLinesBetweenLandmarkNodes(List<GraphNode<?>> pathList){
+        for (int i = 0; i < pathList.size()-1; i++) {
+                GraphNode<LandmarkNode> nodeA = (GraphNode<LandmarkNode>) pathList.get(i);
+                GraphNode<LandmarkNode> nodeB = (GraphNode<LandmarkNode>) pathList.get(i+1);
+                Line line = new Line(nodeA.data.getX(),nodeA.data.getY(),nodeB.data.getX(),nodeB.data.getY());
+                line.setStroke(Color.RED);
+                line.setStrokeWidth(5);
+
+                line.setLayoutY(imageView.getLayoutY());
+                line.setLayoutX(imageView.getLayoutX());
+                AnchorPane ap = (AnchorPane) imageView.getParent();
+                ap.getChildren().add(line);
+
+        }
+    }
+
+    @Provisional
+    public void generateDepthFSRoute(ActionEvent actionEvent) {
+        resetMap();
+
+        String startingNodeName = startChoiceBox.getValue();
+        String destNodeName = endChoiceBox.getValue();
+
+        GraphNode<LandmarkNode> startNode = null;
+        GraphNode<LandmarkNode> destNode = null;
+
+        for(GraphNode<LandmarkNode> node : landmarkNodes){
+
+            if(node.data.getName().equals(startingNodeName)) {
+                startNode = node;
+            }
+
+            if(node.data.getName().equals(destNodeName)) {
+                destNode = node;
+            }
+
+        }
+
+        if (startNode != null && destNode != null) {
+            List<GraphNode<?>> pathList = GraphAPI.findPathDepthFirst(startNode,null,destNode.data);
+            drawLinesBetweenLandmarkNodes(pathList);
+        }
+
     }
 
 
