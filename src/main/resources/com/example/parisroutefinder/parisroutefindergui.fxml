@@ -2,6 +2,8 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -18,31 +20,39 @@
                   <Image url="@paris-map-vector-800x571.png" />
                </image>
             </ImageView>
-            <Text fx:id="titleText" fill="WHITE" layoutX="14.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="City of Paris Route Finder">
+            <Text fill="WHITE" layoutX="14.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="City of Paris Route Finder">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
-            <ChoiceBox fx:id="startChoiceBox" layoutX="858.0" layoutY="76.0" prefHeight="43.0" prefWidth="136.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
-            <ChoiceBox fx:id="endChoiceBox" layoutX="1018.0" layoutY="76.0" prefHeight="43.0" prefWidth="136.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
-            <Text fx:id="startText" fill="WHITE" layoutX="858.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Start:" />
-            <Text fx:id="destinationText" fill="WHITE" layoutX="1018.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dest:" />
-            <Text fx:id="generateShortestRouteText" fill="WHITE" layoutX="857.0" layoutY="271.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generate Shortest Route">
+            <ChoiceBox fx:id="startChoiceBox" layoutX="859.0" layoutY="68.0" prefHeight="43.0" prefWidth="136.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
+            <ChoiceBox fx:id="endChoiceBox" layoutX="1018.0" layoutY="68.0" prefHeight="43.0" prefWidth="136.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
+            <Text fill="WHITE" layoutX="858.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Start:" />
+            <Text fill="WHITE" layoutX="1018.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dest:" />
+            <Text fill="WHITE" layoutX="858.0" layoutY="441.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generate Shortest Route">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
-            <Button layoutX="857.0" layoutY="286.0" mnemonicParsing="false" style="-fx-background-radius: 15;" text="Breadth-First-Search" />
-            <Text fx:id="generateMostHistoricalRouteText" fill="WHITE" layoutX="857.0" layoutY="369.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generate most historical/cultural route">
+            <Button layoutX="858.0" layoutY="456.0" mnemonicParsing="false" style="-fx-background-radius: 15;" text="Breadth-First-Search" />
+            <Text fill="WHITE" layoutX="858.0" layoutY="539.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generate most historical/cultural route">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
-            <Button layoutX="1019.0" layoutY="286.0" mnemonicParsing="false" onAction="#plotPointsWithLabels" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
-            <Button layoutX="858.0" layoutY="380.0" mnemonicParsing="false" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
+            <Button layoutX="1020.0" layoutY="456.0" mnemonicParsing="false" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
+            <Button layoutX="859.0" layoutY="550.0" mnemonicParsing="false" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
             <Button layoutX="14.0" layoutY="622.0" mnemonicParsing="false" onAction="#resetMap" style="-fx-background-color: white; -fx-text-fill: black; -fx-background-radius: 15;" text="Reset Map" />
             <Text fill="WHITE" layoutX="858.0" layoutY="152.0" strokeType="OUTSIDE" strokeWidth="0.0" />
-            <Button layoutX="858.0" layoutY="139.0" mnemonicParsing="false" onAction="#generateDepthFSRoute" prefHeight="32.0" prefWidth="105.0" style="-fx-background-color: yellow; -fx-text-fill: black; -fx-background-radius: 15;" text="Generate" textFill="WHITE" />
+            <Button layoutX="859.0" layoutY="168.0" mnemonicParsing="false" onAction="#generateDepthFSRoutes" prefHeight="32.0" prefWidth="218.0" style="-fx-background-color: yellow; -fx-text-fill: black; -fx-background-radius: 15;" text="Generate Depth-FS routes" textFill="WHITE" />
+            <ListView fx:id="listViewDepthFS" layoutX="859.0" layoutY="240.0" prefHeight="164.0" prefWidth="257.0" onMouseClicked="#drawLinesBetweenLandmarkNodes"/>
+            <Text fill="WHITE" layoutX="858.0" layoutY="235.0" strokeType="OUTSIDE" strokeWidth="0.0" text="List of Depth-FS routes ">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Text>
+            <TextField fx:id="maxNumDepthFSRoutes" layoutX="1031.0" layoutY="127.0" prefHeight="25.0" prefWidth="41.0" />
+            <Text fill="WHITE" layoutX="860.0" layoutY="144.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Max Number Of Routes:" />
          </children>
       </AnchorPane>
    </top>

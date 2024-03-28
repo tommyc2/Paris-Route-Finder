@@ -14,10 +14,6 @@ import java.util.Map;
 
 public class Driver extends Application {
 
-    private Controller controller = new Controller();
-
-    private List<GraphNode<LandmarkNode>> landmarkNodes = controller.landmarkNodes;
-
     @Override
     public void start(Stage stage) throws IOException {
 

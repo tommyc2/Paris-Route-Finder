@@ -1,10 +1,13 @@
 package controllers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -26,16 +29,10 @@ import javafx.scene.paint.Color;
 public class Controller {
 
     public ImageView imageView = new ImageView();
-
     public List<GraphNode<LandmarkNode>> landmarkNodes = new ArrayList<>();
-
     public List<Integer> imageArray = new ArrayList<>();
-    public Text titleText;
-    public Text startText;
-    public Text destinationText;
-    public Text generateShortestRouteText;
-    public Text generateMostHistoricalRouteText;
-
+    public ListView<List<GraphNode<?>>> listViewDepthFS = new ListView<>();
+    public TextField maxNumDepthFSRoutes = new TextField();
     @FXML
     private ChoiceBox<String> startChoiceBox;
     @FXML
@@ -47,9 +44,21 @@ public class Controller {
         plotPointsWithLabels();
         addLandmarkLinks();
 
-        // Testing DFS Lines on map
-       //List<GraphNode<?>> path = GraphAPI.findPathDepthFirst(landmarkNodes.get(0),null,landmarkNodes.get(7).data);
-        //drawLinesBetweenLandmarkNodes(path);
+        //System.out.println("------------------------------------------");
+       // List<List<GraphNode<?>>> allPaths = GraphAPI.findAllPathsDepthFirst(landmarkNodes.get(0), null, landmarkNodes.get(3).data);
+      //  int pathCount = 1;
+      //  int maxNumOfPaths = 10;
+
+        //for (List<GraphNode<?>> path : allPaths) {
+         //   if (pathCount <= 10) {
+        //        System.out.println("\nPath " + (pathCount++) + "\n--------");
+         //       for (GraphNode<?> node : path) {
+         //           System.out.println(node.data);
+         //       }
+         //   }
+       // }
+
+
     }
     @Provisional
     public void addLandmarkLinks(){
@@ -148,7 +157,6 @@ public class Controller {
 
     public void resetMap(){
         AnchorPane anchorPane = (AnchorPane) imageView.getParent();
-        anchorPane.getChildren().removeIf(component -> component instanceof Circle);
         anchorPane.getChildren().removeIf(component -> component instanceof Line);
     }
 
@@ -165,7 +173,7 @@ public class Controller {
                 this.landmarkNodes.add(gnode);
                 //System.out.println("P: " + lmn.getName() + ", X: "+lmn.getX() + ", Y: "+ lmn.getY());
             }
-            System.out.println("Number of nodes: " + landmarkNodes.size());
+            System.out.println("Successfully loaded data in");
         }
         catch(IOException error){
             System.out.println("Error occured when loading data: "+error);
@@ -217,51 +225,64 @@ public class Controller {
         // Code to initiate cultural route calculation...
     }
 
-    @Provisional
-    public void drawLinesBetweenLandmarkNodes(List<GraphNode<?>> pathList){
-        for (int i = 0; i < pathList.size()-1; i++) {
-                GraphNode<LandmarkNode> nodeA = (GraphNode<LandmarkNode>) pathList.get(i);
-                GraphNode<LandmarkNode> nodeB = (GraphNode<LandmarkNode>) pathList.get(i+1);
-                Line line = new Line(nodeA.data.getX(),nodeA.data.getY(),nodeB.data.getX(),nodeB.data.getY());
-                line.setStroke(Color.RED);
-                line.setStrokeWidth(5);
+    public void drawLinesBetweenLandmarkNodes(MouseEvent event){
+        resetMap();
 
-                line.setLayoutY(imageView.getLayoutY());
-                line.setLayoutX(imageView.getLayoutX());
-                AnchorPane ap = (AnchorPane) imageView.getParent();
-                ap.getChildren().add(line);
+        List<GraphNode<?>> pathList;
+            if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
+                pathList = listViewDepthFS.getSelectionModel().getSelectedItem();
+               System.out.println("Total distance/cost (pixel units): " + GraphAPI.calculateTotalDistanceOfPath(pathList));
 
-        }
+                for (int i = 0; i < pathList.size()-1; i++) {
+                    GraphNode<LandmarkNode> nodeA = (GraphNode<LandmarkNode>) pathList.get(i);
+                    GraphNode<LandmarkNode> nodeB = (GraphNode<LandmarkNode>) pathList.get(i+1);
+                    Line line = new Line(nodeA.data.getX(),nodeA.data.getY(),nodeB.data.getX(),nodeB.data.getY());
+                    line.setStroke(Color.RED);
+                    line.setStrokeWidth(4);
+                    line.setLayoutY(imageView.getLayoutY());
+                    line.setLayoutX(imageView.getLayoutX());
+                    AnchorPane ap = (AnchorPane) imageView.getParent();
+                    ap.getChildren().add(line);
+
+                }
+            }
     }
 
-    @Provisional
-    public void generateDepthFSRoute(ActionEvent actionEvent) {
+    public void generateDepthFSRoutes(ActionEvent actionEvent) {
         resetMap();
+        listViewDepthFS.getItems().clear();
 
         String startingNodeName = startChoiceBox.getValue();
         String destNodeName = endChoiceBox.getValue();
-
         GraphNode<LandmarkNode> startNode = null;
         GraphNode<LandmarkNode> destNode = null;
 
         for(GraphNode<LandmarkNode> node : landmarkNodes){
-
             if(node.data.getName().equals(startingNodeName)) {
                 startNode = node;
             }
-
             if(node.data.getName().equals(destNodeName)) {
                 destNode = node;
             }
-
         }
 
-        if (startNode != null && destNode != null) {
-            List<GraphNode<?>> pathList = GraphAPI.findPathDepthFirst(startNode,null,destNode.data);
-            drawLinesBetweenLandmarkNodes(pathList);
-        }
+        List<List<GraphNode<?>>> listOfPaths = GraphAPI.findAllPathsDepthFirst(startNode,null,destNode.data);
+
+        // Limiting paths generated by user-specified value
+        int pathCount = 1;
+        for(List<GraphNode<?>> path : listOfPaths){
+            if(pathCount <= getMaxNumRoutesDepthFS()){
+                listViewDepthFS.getItems().add(path); // Adding each path as a separate entry in ListView for Depth First Search routes generated
+                pathCount++;
+            }
+       }
 
     }
+
+    private int getMaxNumRoutesDepthFS() {
+        if(maxNumDepthFSRoutes.getText().isEmpty()) return 1; else return Integer.parseInt(maxNumDepthFSRoutes.getText());
+    }
+
 
 
 }
