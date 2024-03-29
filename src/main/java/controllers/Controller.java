@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -282,6 +283,64 @@ public class Controller {
     private int getMaxNumRoutesDepthFS() {
         if(maxNumDepthFSRoutes.getText().isEmpty()) return 1; else return Integer.parseInt(maxNumDepthFSRoutes.getText());
     }
+
+    @FXML
+    private void findShortestPath(ActionEvent event) {
+        String startLandmarkName = startChoiceBox.getValue();
+        String endLandmarkName = endChoiceBox.getValue();
+
+        GraphNode<LandmarkNode> startNode = findNodeByName(startLandmarkName);
+        GraphNode<LandmarkNode> endNode = findNodeByName(endLandmarkName);
+
+        if (startNode == null || endNode == null) {
+            // Handle error: Start or end node not found
+            return;
+        }
+
+        List<GraphNode<LandmarkNode>> shortestPath = GraphAPI.dijkstrasShortestPath(startNode, endNode, landmarkNodes);
+
+        visualizePathOnMap(shortestPath);
+
+    }
+
+    private GraphNode<LandmarkNode> findNodeByName(String name) {
+        for (GraphNode<LandmarkNode> node : landmarkNodes) {
+            if (node.data.getName().equalsIgnoreCase(name)) {
+                return node;
+            }
+        }
+        return null; // Node not found
+    }
+
+    private void visualizePathOnMap(List<GraphNode<LandmarkNode>> path) {
+        if (path == null || path.isEmpty()) {
+            System.out.println("Path is empty or null");
+            return;
+        }
+
+        // Assuming imageView is correctly placed within the AnchorPane
+        double imageViewX = imageView.getLayoutX();
+        double imageViewY = imageView.getLayoutY();
+
+        for (int i = 0; i < path.size() - 1; i++) {
+            GraphNode<LandmarkNode> currentNode = path.get(i);
+            GraphNode<LandmarkNode> nextNode = path.get(i + 1);
+
+            // Adjust line start and end positions based on the imageView's layout properties
+            Line line = new Line(
+                    imageViewX + currentNode.data.getX(),
+                    imageViewY + currentNode.data.getY(),
+                    imageViewX + nextNode.data.getX(),
+                    imageViewY + nextNode.data.getY()
+            );
+            line.setStroke(Color.RED); // Set line color
+            line.setStrokeWidth(2); // Set line width
+
+            AnchorPane drawingArea = (AnchorPane) imageView.getParent();
+            drawingArea.getChildren().add(line); // Add the line to the AnchorPane
+        }
+    }
+
 
 
 

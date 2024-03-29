@@ -4,8 +4,7 @@ import models.GraphLink;
 import models.GraphNode;
 import models.LandmarkNode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GraphAPI {
 
@@ -80,4 +79,49 @@ public class GraphAPI {
         return totalCost;
     }
 
+    public static List<GraphNode<LandmarkNode>> dijkstrasShortestPath(
+            GraphNode<LandmarkNode> startNode, GraphNode<LandmarkNode> endNode, Collection<GraphNode<LandmarkNode>> allNodes) {
+
+        final int INFINITY = Integer.MAX_VALUE;
+        Map<GraphNode<LandmarkNode>, Integer> distance = new HashMap<>();
+        Map<GraphNode<LandmarkNode>, GraphNode<LandmarkNode>> previous = new HashMap<>();
+        PriorityQueue<GraphNode<LandmarkNode>> queue = new PriorityQueue<>(Comparator.comparingInt(distance::get));
+
+        // Initialize distances and queue
+        for (GraphNode<LandmarkNode> node : allNodes) {
+            distance.put(node, INFINITY);
+            previous.put(node, null);
+            queue.add(node);
+        }
+        distance.put(startNode, 0);
+
+        while (!queue.isEmpty()) {
+            GraphNode<LandmarkNode> current = queue.poll();
+
+            if (current.equals(endNode)) break; // Found the shortest path
+
+            for (GraphLink<LandmarkNode> edge : current.adjList) {
+                GraphNode<LandmarkNode> target = edge.destNode;
+                int altDistance = distance.get(current) + edge.cost;
+
+                if (altDistance < distance.get(target)) {
+                    distance.put(target, altDistance);
+                    previous.put(target, current);
+
+                    // Since PriorityQueue does not automatically reorder, we need to simulate updating the priority
+                    queue.remove(target);
+                    queue.add(target);
+                }
+            }
+        }
+
+        // Reconstruct the path from endNode to startNode
+        LinkedList<GraphNode<LandmarkNode>> path = new LinkedList<>();
+        for (GraphNode<LandmarkNode> at = endNode; at != null; at = previous.get(at)) {
+            path.addFirst(at);
+        }
+
+        // The path is constructed from end to start, so it's already in the correct order
+        return path; // This is the shortest path from startNode to endNode
+    }
 }
