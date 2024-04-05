@@ -61,6 +61,7 @@ public class Controller {
 
 
     }
+
     @Provisional
     public void addLandmarkLinks(){
 
@@ -117,9 +118,47 @@ public class Controller {
         palais.connectToNodeUndirected(concorde, GraphAPI.calculateCostOfEdge(palais,concorde));
         palais.connectToNodeUndirected(pompidou, GraphAPI.calculateCostOfEdge(palais,pompidou));
 
-
-
     }
+
+    // Returns 2-3 close/nearby nodes for the purpose of incorporating waypoint into LandmarkNodes list etc
+    @Provisional
+    public List<GraphNode<?>> findNearbyLandmarkNodes(GraphNode<?> nodeA){
+        List<GraphNode<?>> nearbyNodes = new ArrayList<>();
+        List<Integer> distances = new ArrayList<>();
+
+        for(GraphNode<?> nodeB : this.landmarkNodes){
+            if (nodeB != nodeA) {
+                distances.add(GraphAPI.calculateCostOfEdge((GraphNode<LandmarkNode>) nodeB, (GraphNode<LandmarkNode>) nodeA));
+            }
+        }
+        Collections.sort(distances);
+
+        GraphNode<?> adjacentNode1 = null;
+        GraphNode<?> adjacentNode2 = null;
+        GraphNode<?> adjacentNode3 = null;
+
+        for(GraphNode<?> node : this.landmarkNodes){
+            int d = GraphAPI.calculateCostOfEdge((GraphNode<LandmarkNode>) node, (GraphNode<LandmarkNode>) nodeA);
+            if ((distances.get(0) == d) && adjacentNode1 == null && d != 0) {
+                adjacentNode1 = node;
+            }
+            if ((distances.get(1) == d) && adjacentNode2 == null && d != 0) {
+                adjacentNode2 = node;
+            }
+            if ((distances.get(2) == d) && adjacentNode3 == null && d != 0) {
+                adjacentNode3 = node;
+            }
+        }
+
+
+
+        nearbyNodes.add(adjacentNode1);
+        nearbyNodes.add(adjacentNode2);
+        nearbyNodes.add(adjacentNode3);
+
+        return nearbyNodes;
+    }
+
     public void processBitmap() throws FileNotFoundException {
         Image bitmap = new Image(new FileInputStream("src/main/resources/com/example/parisroutefinder/bitmap-paris.bmp"));
         Image image = imageView.getImage();
@@ -159,6 +198,7 @@ public class Controller {
     public void resetMap(){
         AnchorPane anchorPane = (AnchorPane) imageView.getParent();
         anchorPane.getChildren().removeIf(component -> component instanceof Line);
+        anchorPane.getChildren().removeIf(component -> component instanceof Circle);
     }
 
 /* loading in data from csv */
@@ -341,7 +381,28 @@ public class Controller {
         }
     }
 
+    // TODO: make it display an error when road isn't clicked
+    @Provisional
+    public void addWayPoint(MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2){
+            Circle dot = new Circle(event.getX(), event.getY(),5);
+            dot.setLayoutX(imageView.getLayoutX());
+            dot.setLayoutY(imageView.getLayoutY());
+            dot.setFill(Color.BLACK);
+            dot.setCenterX(event.getX());
+            dot.setCenterY(event.getY());
+            AnchorPane drawingArea = (AnchorPane) imageView.getParent();
+            drawingArea.getChildren().add(dot); // Add the circle to the AnchorPane
 
+            // Code to add dot to landmarkNodes list
+            Pixel pixel = new Pixel((int)event.getX(),(int)event.getY());
+            LandmarkNode newNode = new LandmarkNode("WayPoint",pixel);
+            GraphNode<LandmarkNode> waypointNode = new GraphNode<>(newNode);
+            List<GraphNode<?>> nearbyNodes = findNearbyLandmarkNodes(waypointNode);
+            for(GraphNode<?> node : nearbyNodes){
+                waypointNode.connectToNodeUndirected((GraphNode<LandmarkNode>) node,GraphAPI.calculateCostOfEdge(waypointNode,(GraphNode<LandmarkNode>) node));
+            }
+        }
 
-
+    }
 }
