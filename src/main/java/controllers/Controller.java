@@ -13,6 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import models.GraphLink;
 import models.GraphNode;
 import models.LandmarkNode;
 import models.Pixel;
@@ -40,6 +41,8 @@ public class Controller {
     private ChoiceBox<String> startChoiceBox;
     @FXML
     private ChoiceBox<String> endChoiceBox;
+
+    private List<GraphNode<LandmarkNode>> historicalNodes = new ArrayList<>();
 
     public void initialize() throws IOException {
         loadData(); // Ensure this is called before trying to populate the ComboBoxes
@@ -406,10 +409,12 @@ public class Controller {
     @Provisional
     public void addWayPoint(MouseEvent event) {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2){
-            Circle dot = new Circle(event.getX(), event.getY(),5);
+            Circle dot = new Circle(event.getX(), event.getY(),4);
             dot.setLayoutX(imageView.getLayoutX());
             dot.setLayoutY(imageView.getLayoutY());
-            dot.setFill(Color.BLACK);
+            dot.setFill(Color.WHITE);
+            dot.setStrokeWidth(3.5);
+            dot.setStroke(Color.PURPLE);
             dot.setCenterX(event.getX());
             dot.setCenterY(event.getY());
             AnchorPane drawingArea = (AnchorPane) imageView.getParent();
@@ -431,17 +436,15 @@ public class Controller {
 
     public void avoidPointInPaths(ActionEvent actionEvent) {
         GraphNode<LandmarkNode> nodeToAvoid = findNodeByName(avoidPointChoiceBox.getValue());
-        for(GraphNode<LandmarkNode> node : landmarkNodes){
-
-            // -----------------------------------------------------------------
-            // TODO fix bug here with the adjList not containing 'nodeToAvoid'
-            // -----------------------------------------------------------------
-            if (node.adjList.contains(nodeToAvoid)){
-                boolean removedPoint = node.adjList.remove(nodeToAvoid);
-                if (removedPoint) System.out.println(node.data.getName() + " is avoiding " + nodeToAvoid.data.getName());
+        
+        for(GraphNode<LandmarkNode> lmnode : landmarkNodes){
+            for(int j = 0; j < lmnode.adjList.size()-1; j++){
+                if(lmnode.adjList.get(j).destNode.data.getName().equals(nodeToAvoid != null ? nodeToAvoid.data.getName() : null)){
+                    boolean removedPoint = lmnode.adjList.remove(lmnode.adjList.get(j));
+                    if (removedPoint) System.out.println("REmoved");
+                }
             }
         }
         landmarkNodes.remove(nodeToAvoid);
-
     }
 }
