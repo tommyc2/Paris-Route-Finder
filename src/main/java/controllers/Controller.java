@@ -34,6 +34,8 @@ public class Controller {
     public List<Integer> imageArray = new ArrayList<>();
     public ListView<List<GraphNode<?>>> listViewDepthFS = new ListView<>();
     public TextField maxNumDepthFSRoutes = new TextField();
+    public ListView<GraphNode<?>> waypointsListView = new ListView<>();
+    public ChoiceBox<String> avoidPointChoiceBox;
     @FXML
     private ChoiceBox<String> startChoiceBox;
     @FXML
@@ -195,10 +197,22 @@ public class Controller {
         return sat && brightness && hue && green && red && blue;
     }
 
-    public void resetMap(){
+    public void resetMap() {
         AnchorPane anchorPane = (AnchorPane) imageView.getParent();
         anchorPane.getChildren().removeIf(component -> component instanceof Line);
         anchorPane.getChildren().removeIf(component -> component instanceof Circle);
+        landmarkNodes.clear(); // Reset landmark node list and re-add them so that all temporary waypoints added are removed
+        listViewDepthFS.getItems().clear();
+        waypointsListView.getItems().clear();
+        maxNumDepthFSRoutes.clear();
+        // Load landmarks from CSV file again
+        try {
+            loadData();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // Connect each node again as the list was reset
+        addLandmarkLinks();
     }
 
 /* loading in data from csv */
@@ -223,6 +237,9 @@ public class Controller {
 
     public void plotPointsWithLabels(){
 
+        /* - Loop through each landmark
+           - Display landmark as rectangular point
+         */
         for(GraphNode<LandmarkNode> node : this.landmarkNodes){
             Rectangle rect = new Rectangle(node.data.getX(),node.data.getY(),7,7);
             rect.setFill(Color.BLACK);
@@ -248,6 +265,7 @@ public class Controller {
 
         startChoiceBox.setItems(landmarkNames);
         endChoiceBox.setItems(landmarkNames);
+        avoidPointChoiceBox.setItems(landmarkNames);
     }
 
     @FXML
@@ -267,7 +285,8 @@ public class Controller {
     }
 
     public void drawLinesBetweenLandmarkNodes(MouseEvent event){
-        resetMap();
+        AnchorPane anchorPane = (AnchorPane) imageView.getParent();
+        anchorPane.getChildren().removeIf(component -> component instanceof Line);
 
         List<GraphNode<?>> pathList;
             if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
@@ -290,7 +309,6 @@ public class Controller {
     }
 
     public void generateDepthFSRoutes(ActionEvent actionEvent) {
-        resetMap();
         listViewDepthFS.getItems().clear();
 
         String startingNodeName = startChoiceBox.getValue();
@@ -326,6 +344,9 @@ public class Controller {
 
     @FXML
     private void findShortestPath(ActionEvent event) {
+        AnchorPane anchorPane = (AnchorPane) imageView.getParent();
+        anchorPane.getChildren().removeIf(component -> component instanceof Line);
+
         String startLandmarkName = startChoiceBox.getValue();
         String endLandmarkName = endChoiceBox.getValue();
 
@@ -394,10 +415,12 @@ public class Controller {
             AnchorPane drawingArea = (AnchorPane) imageView.getParent();
             drawingArea.getChildren().add(dot); // Add the circle to the AnchorPane
 
-            // Code to add dot to landmarkNodes list
+            // Code to add dot to landmarkNodes list (waypoint)
             Pixel pixel = new Pixel((int)event.getX(),(int)event.getY());
             LandmarkNode newNode = new LandmarkNode("WayPoint",pixel);
             GraphNode<LandmarkNode> waypointNode = new GraphNode<>(newNode);
+            waypointsListView.getItems().add(waypointNode);
+            // Way point added to landmarkNodes list for the time being
             List<GraphNode<?>> nearbyNodes = findNearbyLandmarkNodes(waypointNode);
             for(GraphNode<?> node : nearbyNodes){
                 waypointNode.connectToNodeUndirected((GraphNode<LandmarkNode>) node,GraphAPI.calculateCostOfEdge(waypointNode,(GraphNode<LandmarkNode>) node));
