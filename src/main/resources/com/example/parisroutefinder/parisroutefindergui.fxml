@@ -68,6 +68,7 @@
                </font>
             </Text>
             <ChoiceBox fx:id="avoidPointChoiceBox" layoutX="961.0" layoutY="118.0" prefWidth="150.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
+            <Button layoutX="1116.0" layoutY="117.0" mnemonicParsing="false" onAction="#avoidPointInPaths" style="-fx-background-color: lightblue; -fx-background-radius: 3;" text="OK" />
          </children>
       </AnchorPane>
    </top>

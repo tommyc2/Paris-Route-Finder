@@ -428,4 +428,20 @@ public class Controller {
         }
 
     }
+
+    public void avoidPointInPaths(ActionEvent actionEvent) {
+        GraphNode<LandmarkNode> nodeToAvoid = findNodeByName(avoidPointChoiceBox.getValue());
+        for(GraphNode<LandmarkNode> node : landmarkNodes){
+
+            // -----------------------------------------------------------------
+            // TODO fix bug here with the adjList not containing 'nodeToAvoid'
+            // -----------------------------------------------------------------
+            if (node.adjList.contains(nodeToAvoid)){
+                boolean removedPoint = node.adjList.remove(nodeToAvoid);
+                if (removedPoint) System.out.println(node.data.getName() + " is avoiding " + nodeToAvoid.data.getName());
+            }
+        }
+        landmarkNodes.remove(nodeToAvoid);
+
+    }
 }
