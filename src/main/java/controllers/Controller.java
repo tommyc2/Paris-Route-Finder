@@ -228,10 +228,15 @@ public class Controller {
                 String[] line = row.split(",");
                 LandmarkNode lmn = new LandmarkNode(line[0],new Pixel(Integer.parseInt(line[1]),Integer.parseInt(line[2])));
                 GraphNode<LandmarkNode> gnode = new GraphNode<>(lmn);
+                if (Integer.parseInt(line[3]) < 1699){
+                    this.historicalNodes.add(gnode);
+                }
                 this.landmarkNodes.add(gnode);
                 //System.out.println("P: " + lmn.getName() + ", X: "+lmn.getX() + ", Y: "+ lmn.getY());
             }
             System.out.println("Successfully loaded data in");
+            System.out.println("Number of historical nodes:" + historicalNodes.size());
+            System.out.println("Total number of nodes:" + landmarkNodes.size());
         }
         catch(IOException error){
             System.out.println("Error occured when loading data: "+error);
