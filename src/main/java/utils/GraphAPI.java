@@ -115,4 +115,8 @@ public class GraphAPI {
         }
         return path;
     }
+
+    public static List<GraphNode<LandmarkNode>> dijkstrasHistoricalPath(GraphNode<LandmarkNode> startNode, GraphNode<LandmarkNode> destNode, List<GraphNode<LandmarkNode>> landmarkNodes) {
+        return landmarkNodes;
+    }
 }

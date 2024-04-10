@@ -465,35 +465,15 @@ public class Controller {
         GraphNode<LandmarkNode> startNode = findNodeByName(startNodeName);
         GraphNode<LandmarkNode> destNode = findNodeByName(endNodeName);
 
-        List<GraphNode<LandmarkNode>> pathGenerated = GraphAPI.dijkstrasShortestPath(startNode,destNode,landmarkNodes);
+        List<GraphNode<LandmarkNode>> mostHistoricalPath = GraphAPI.dijkstrasHistoricalPath(startNode,destNode,landmarkNodes);
 
-        List<GraphNode<LandmarkNode>> mostHistoricalPath = new ArrayList<>();
-        try {
-            mostHistoricalPath.add(startNode);
-        }
-        catch (Exception e) {
-            System.out.println("Error occured when adding start node to most historical path list" + e.getMessage());
-        }
-
-
-        for(GraphNode<LandmarkNode> node : pathGenerated){
-            GraphNode<LandmarkNode> highestCulturalValueNode = node;
-
-            for(GraphNode<LandmarkNode> n : pathGenerated){
-                if (n != startNode && n != destNode){
-                    if (n.data.getCulturalValue() > node.data.getCulturalValue()){
-                        highestCulturalValueNode = n;
-                    }
-                }
-            }
-            mostHistoricalPath.add(highestCulturalValueNode);
-        }
-        mostHistoricalPath.add(destNode);
-
-        System.out.println("-----Reformated path---------");
+        System.out.println("----- Most Historical Path ---------");
         for(GraphNode<LandmarkNode> pathNode : mostHistoricalPath){
             System.out.println(pathNode.data.getName()+ ": " + pathNode.data.getCulturalValue());
         }
+            System.out.println("----- ----------------- ---------");
 
     }
+
+
 }
