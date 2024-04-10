@@ -1,14 +1,11 @@
 package controllers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -93,6 +90,12 @@ public class Controller {
         GraphNode<LandmarkNode> c = landmarkNodes.get(18);
         GraphNode<LandmarkNode> d = landmarkNodes.get(19);
 
+        eiffelTower.connectToNodeUndirected(musee,GraphAPI.calculateCostOfEdge(musee,eiffelTower));
+        concorde.connectToNodeUndirected(vendome,GraphAPI.calculateCostOfEdge(vendome,concorde));
+        notredame.connectToNodeUndirected(pompidou,GraphAPI.calculateCostOfEdge(pompidou,notredame));
+        a.connectToNodeUndirected(musee,GraphAPI.calculateCostOfEdge(a,musee));
+        a.connectToNodeUndirected(louvre,GraphAPI.calculateCostOfEdge(a,louvre));
+        pontalexandre.connectToNodeUndirected(eiffelTower,GraphAPI.calculateCostOfEdge(pontalexandre,eiffelTower));
         eiffelTower.connectToNodeUndirected(arcdetriomphe, GraphAPI.calculateCostOfEdge(eiffelTower,arcdetriomphe));
         eiffelTower.connectToNodeUndirected(a,GraphAPI.calculateCostOfEdge(eiffelTower,a));
         arcdetriomphe.connectToNodeUndirected(champselysees, GraphAPI.calculateCostOfEdge(arcdetriomphe,champselysees));
@@ -358,7 +361,7 @@ public class Controller {
             System.out.println(node.data.getName());
         }
 
-        visualizePathOnMap(shortestPath);
+        visualizePathOnMap(shortestPath, Color.RED);
 
     }
 
@@ -371,7 +374,7 @@ public class Controller {
         return null; // Node not found
     }
 
-    private void visualizePathOnMap(List<GraphNode<LandmarkNode>> path) {
+    private void visualizePathOnMap(List<GraphNode<LandmarkNode>> path, Color color) {
         if (path == null || path.isEmpty()) {
             System.out.println("Path is empty or null");
             return;
@@ -392,7 +395,7 @@ public class Controller {
                     imageViewX + nextNode.data.getX(),
                     imageViewY + nextNode.data.getY()
             );
-            line.setStroke(Color.RED); // Set line color
+            line.setStroke(color); // Set line color
             line.setStrokeWidth(2); // Set line width
 
             AnchorPane drawingArea = (AnchorPane) imageView.getParent();
@@ -476,4 +479,18 @@ public class Controller {
     }
 
 
+    public void displayLinksWithLines(ActionEvent actionEvent) {
+       for(GraphNode<LandmarkNode> node : landmarkNodes){
+           if (!node.adjList.isEmpty()){
+               for(GraphLink<LandmarkNode> graphNodeLink : node.adjList){
+                   GraphNode<LandmarkNode> destNode = graphNodeLink.destNode;
+
+                   List<GraphNode<LandmarkNode>> miniPath = new ArrayList<>();
+                   miniPath.add(node);
+                   miniPath.add(destNode);
+                   visualizePathOnMap(miniPath,Color.BLUE);
+               }
+           }
+       }
+    }
 }

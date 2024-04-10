@@ -69,6 +69,11 @@
             </Text>
             <ChoiceBox fx:id="avoidPointChoiceBox" layoutX="961.0" layoutY="118.0" prefWidth="150.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
             <Button layoutX="1116.0" layoutY="117.0" mnemonicParsing="false" onAction="#avoidPointInPaths" style="-fx-background-color: lightblue; -fx-background-radius: 3;" text="OK" />
+            <Button layoutX="312.0" layoutY="636.0" mnemonicParsing="false" onAction="#displayLinksWithLines" style="-fx-background-radius: 15; -fx-background-color: yellow; -fx-text-fill: black;" text="Display Connections">
+               <font>
+                  <Font name="Tlwg Mono Bold" size="16.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </top>
