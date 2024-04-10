@@ -41,7 +41,7 @@
                </font>
             </Text>
             <Button layoutX="1020.0" layoutY="486.0" mnemonicParsing="false" onAction="#findShortestPath" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
-            <Button layoutX="859.0" layoutY="565.0" mnemonicParsing="false" style="-fx-background-color: Green; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
+            <Button layoutX="859.0" layoutY="565.0" mnemonicParsing="false" onAction="#generateMostHistoricalRoute" style="-fx-background-color: Green; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
             <Button layoutX="14.0" layoutY="622.0" mnemonicParsing="false" onAction="#resetMap" style="-fx-background-color: white; -fx-text-fill: black; -fx-background-radius: 15;" text="Reset Map" />
             <Text fill="WHITE" layoutX="858.0" layoutY="152.0" strokeType="OUTSIDE" strokeWidth="0.0" />
             <Button layoutX="859.0" layoutY="196.0" mnemonicParsing="false" onAction="#generateDepthFSRoutes" prefHeight="32.0" prefWidth="218.0" style="-fx-background-color: yellow; -fx-text-fill: black; -fx-background-radius: 15;" text="Generate Depth-FS routes" textFill="WHITE" />

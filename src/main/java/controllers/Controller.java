@@ -42,8 +42,6 @@ public class Controller {
     @FXML
     private ChoiceBox<String> endChoiceBox;
 
-    private List<GraphNode<LandmarkNode>> historicalNodes = new ArrayList<>();
-
     public void initialize() throws IOException {
         loadData(); // Ensure this is called before trying to populate the ComboBoxes
         populateChoiceBoxes();
@@ -208,6 +206,17 @@ public class Controller {
         listViewDepthFS.getItems().clear();
         waypointsListView.getItems().clear();
         maxNumDepthFSRoutes.clear();
+//        for(GraphNode<LandmarkNode> node : landmarkNodes){
+//            if(node.data.getName().equals("WayPoint")){
+//                landmarkNodes.remove(node);
+//            }
+//            for(int i = 0; i < node.adjList.size()-1; i++){
+//                if(node.adjList.get(i).destNode.data.getName().equals("WayPoint")){
+//                    GraphLink<LandmarkNode> remove = node.adjList.remove(i);
+//                    node.adjList.remove(remove);
+//                }
+//            }
+//        }
         // Load landmarks from CSV file again
         try {
             loadData();
@@ -216,6 +225,7 @@ public class Controller {
         }
         // Connect each node again as the list was reset
         addLandmarkLinks();
+
     }
 
 /* loading in data from csv */
@@ -226,16 +236,12 @@ public class Controller {
             BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/com/example/parisroutefinder/nodes.csv"));
             while ((row = reader.readLine()) != null) {
                 String[] line = row.split(",");
-                LandmarkNode lmn = new LandmarkNode(line[0],new Pixel(Integer.parseInt(line[1]),Integer.parseInt(line[2])));
+                LandmarkNode lmn = new LandmarkNode(line[0],new Pixel(Integer.parseInt(line[1]),Integer.parseInt(line[2])),Integer.parseInt(line[3]));
                 GraphNode<LandmarkNode> gnode = new GraphNode<>(lmn);
-                if (Integer.parseInt(line[3]) < 1699){
-                    this.historicalNodes.add(gnode);
-                }
                 this.landmarkNodes.add(gnode);
                 //System.out.println("P: " + lmn.getName() + ", X: "+lmn.getX() + ", Y: "+ lmn.getY());
             }
             System.out.println("Successfully loaded data in");
-            System.out.println("Number of historical nodes:" + historicalNodes.size());
             System.out.println("Total number of nodes:" + landmarkNodes.size());
         }
         catch(IOException error){
@@ -274,22 +280,6 @@ public class Controller {
         startChoiceBox.setItems(landmarkNames);
         endChoiceBox.setItems(landmarkNames);
         avoidPointChoiceBox.setItems(landmarkNames);
-    }
-
-    @FXML
-    private void handleGenerateShortestRoute(ActionEvent event) {
-        String startLandmarkName = startChoiceBox.getValue();
-        String endLandmarkName = endChoiceBox.getValue();
-
-        // Code to initiate shortest path calculation...
-    }
-
-    @FXML
-    private void handleGenerateCulturalRoute(ActionEvent event) {
-        String startLandmarkName = startChoiceBox.getValue();
-        String endLandmarkName = endChoiceBox.getValue();
-
-        // Code to initiate cultural route calculation...
     }
 
     public void drawLinesBetweenLandmarkNodes(MouseEvent event){
@@ -361,12 +351,12 @@ public class Controller {
         GraphNode<LandmarkNode> startNode = findNodeByName(startLandmarkName);
         GraphNode<LandmarkNode> endNode = findNodeByName(endLandmarkName);
 
-        if (startNode == null || endNode == null) {
-            // Handle error: Start or end node not found
-            return;
-        }
-
+        for(GraphNode<LandmarkNode> node : landmarkNodes){ System.out.println(node.data.getName()); }
         List<GraphNode<LandmarkNode>> shortestPath = GraphAPI.dijkstrasShortestPath(startNode, endNode, landmarkNodes);
+
+       for (GraphNode<LandmarkNode> node : shortestPath) {
+            System.out.println(node.data.getName());
+        }
 
         visualizePathOnMap(shortestPath);
 
@@ -410,7 +400,6 @@ public class Controller {
         }
     }
 
-    // TODO: make it display an error when road isn't clicked
     @Provisional
     public void addWayPoint(MouseEvent event) {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2){
@@ -427,14 +416,30 @@ public class Controller {
 
             // Code to add dot to landmarkNodes list (waypoint)
             Pixel pixel = new Pixel((int)event.getX(),(int)event.getY());
-            LandmarkNode newNode = new LandmarkNode("WayPoint",pixel);
+
+            // Determine cultural significance of waypoint
+            // Major cultural significance range: x = 221-521, y = 174-396
+            int histValue = 0;
+            if(pixel.getX() > 221 && pixel.getX() <= 521 && pixel.getY() > 174 && pixel.getY() <= 396){
+                histValue = 55;
+            }
+            else{
+                histValue = 3;
+            }
+
+            LandmarkNode newNode = new LandmarkNode("WayPoint",pixel,histValue);
             GraphNode<LandmarkNode> waypointNode = new GraphNode<>(newNode);
             waypointsListView.getItems().add(waypointNode);
-            // Way point added to landmarkNodes list for the time being
+
+            landmarkNodes.add(waypointNode);
+
             List<GraphNode<?>> nearbyNodes = findNearbyLandmarkNodes(waypointNode);
             for(GraphNode<?> node : nearbyNodes){
                 waypointNode.connectToNodeUndirected((GraphNode<LandmarkNode>) node,GraphAPI.calculateCostOfEdge(waypointNode,(GraphNode<LandmarkNode>) node));
             }
+            boolean waypointRemoved = landmarkNodes.remove(waypointNode);
+            if (waypointRemoved) landmarkNodes.add(waypointNode);
+
         }
 
     }
@@ -451,5 +456,44 @@ public class Controller {
             }
         }
         landmarkNodes.remove(nodeToAvoid);
+    }
+
+    public void generateMostHistoricalRoute(ActionEvent actionEvent) {
+        String startNodeName = startChoiceBox.getValue();
+        String endNodeName = endChoiceBox.getValue();
+
+        GraphNode<LandmarkNode> startNode = findNodeByName(startNodeName);
+        GraphNode<LandmarkNode> destNode = findNodeByName(endNodeName);
+
+        List<GraphNode<LandmarkNode>> pathGenerated = GraphAPI.dijkstrasShortestPath(startNode,destNode,landmarkNodes);
+
+        List<GraphNode<LandmarkNode>> mostHistoricalPath = new ArrayList<>();
+        try {
+            mostHistoricalPath.add(startNode);
+        }
+        catch (Exception e) {
+            System.out.println("Error occured when adding start node to most historical path list" + e.getMessage());
+        }
+
+
+        for(GraphNode<LandmarkNode> node : pathGenerated){
+            GraphNode<LandmarkNode> highestCulturalValueNode = node;
+
+            for(GraphNode<LandmarkNode> n : pathGenerated){
+                if (n != startNode && n != destNode){
+                    if (n.data.getCulturalValue() > node.data.getCulturalValue()){
+                        highestCulturalValueNode = n;
+                    }
+                }
+            }
+            mostHistoricalPath.add(highestCulturalValueNode);
+        }
+        mostHistoricalPath.add(destNode);
+
+        System.out.println("-----Reformated path---------");
+        for(GraphNode<LandmarkNode> pathNode : mostHistoricalPath){
+            System.out.println(pathNode.data.getName()+ ": " + pathNode.data.getCulturalValue());
+        }
+
     }
 }

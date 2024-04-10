@@ -5,11 +5,21 @@ public class LandmarkNode {
     int x;
     int y;
     String name = "";
+    int culturalValue = 0;
 
-    public LandmarkNode(String name,Pixel coords) {
-        this.x = coords.getX();
-        this.y = coords.getY();
-        this.name = name;
+    public LandmarkNode(String name,Pixel coords,int culturalVal) {
+        setName(name);
+        setY(coords.getY());
+        setX(coords.getX());
+        setCulturalValue(culturalVal);
+    }
+
+    public int getCulturalValue() {
+        return culturalValue;
+    }
+
+    public void setCulturalValue(int culturalValue) {
+        this.culturalValue = culturalValue;
     }
 
     public int getX() {
