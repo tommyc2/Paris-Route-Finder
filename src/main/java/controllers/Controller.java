@@ -344,7 +344,7 @@ public class Controller {
     }
 
     @FXML
-    private void findShortestPath(ActionEvent event) {
+    private void findShortestPathDijkstra(ActionEvent event) {
         AnchorPane anchorPane = (AnchorPane) imageView.getParent();
         anchorPane.getChildren().removeIf(component -> component instanceof Line);
 
@@ -355,7 +355,7 @@ public class Controller {
         GraphNode<LandmarkNode> endNode = findNodeByName(endLandmarkName);
 
         for(GraphNode<LandmarkNode> node : landmarkNodes){ System.out.println(node.data.getName()); }
-        List<GraphNode<LandmarkNode>> shortestPath = GraphAPI.dijkstrasShortestPath(startNode, endNode, landmarkNodes);
+        List<GraphNode<LandmarkNode>> shortestPath = GraphAPI.findCheapestPathDijkstra(startNode, endNode, landmarkNodes);
 
        for (GraphNode<LandmarkNode> node : shortestPath) {
             System.out.println(node.data.getName());
@@ -364,6 +364,26 @@ public class Controller {
         visualizePathOnMap(shortestPath, Color.RED);
 
     }
+
+    @FXML
+    private void findShortestPathBFSAction(ActionEvent event) {
+        String startLandmarkName = startChoiceBox.getValue();
+        String endLandmarkName = endChoiceBox.getValue();
+
+        // Assuming you have a method findNodeByName in your controller
+        GraphNode<LandmarkNode> startNode = findNodeByName(startLandmarkName);
+        GraphNode<LandmarkNode> endNode = findNodeByName(endLandmarkName);
+
+        if (startNode == null || endNode == null) {
+            System.out.println("Start or End node not found.");
+            return;
+        }
+
+        List<GraphNode<LandmarkNode>> path = GraphAPI.findShortestPathBFS(startNode, endNode);
+        visualizePathOnMap(path,Color.RED);
+    }
+
+
 
     private GraphNode<LandmarkNode> findNodeByName(String name) {
         for (GraphNode<LandmarkNode> node : landmarkNodes) {

@@ -34,13 +34,13 @@
                   <Font size="15.0" />
                </font>
             </Text>
-            <Button layoutX="858.0" layoutY="486.0" mnemonicParsing="false" style="-fx-background-radius: 15; -fx-background-color: blue; -fx-text-fill: white;" text="Breadth-First-Search" />
+            <Button layoutX="858.0" layoutY="486.0" mnemonicParsing="false" onAction="#findShortestPathBFSAction" style="-fx-background-radius: 15; -fx-background-color: blue; -fx-text-fill: white;" text="Breadth-First-Search" />
             <Text fill="WHITE" layoutX="858.0" layoutY="554.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generate most historical/cultural route">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
-            <Button layoutX="1020.0" layoutY="486.0" mnemonicParsing="false" onAction="#findShortestPath" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
+            <Button layoutX="1020.0" layoutY="486.0" mnemonicParsing="false" onAction="#findShortestPathDijkstra" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
             <Button layoutX="859.0" layoutY="565.0" mnemonicParsing="false" onAction="#generateMostHistoricalRoute" style="-fx-background-color: Green; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
             <Button layoutX="14.0" layoutY="622.0" mnemonicParsing="false" onAction="#resetMap" style="-fx-background-color: white; -fx-text-fill: black; -fx-background-radius: 15;" text="Reset Map" />
             <Text fill="WHITE" layoutX="858.0" layoutY="152.0" strokeType="OUTSIDE" strokeWidth="0.0" />
