@@ -292,7 +292,7 @@ public class Controller {
         List<GraphNode<?>> pathList;
             if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
                 pathList = listViewDepthFS.getSelectionModel().getSelectedItem();
-               System.out.println("Total distance/cost (pixel units): " + GraphAPI.calculateTotalDistanceOfPath(pathList));
+            //   System.out.println("Total distance/cost (pixel units): " + GraphAPI.calculateTotalDistanceOfPath(pathList));
 
                 for (int i = 0; i < pathList.size()-1; i++) {
                     GraphNode<LandmarkNode> nodeA = (GraphNode<LandmarkNode>) pathList.get(i);
