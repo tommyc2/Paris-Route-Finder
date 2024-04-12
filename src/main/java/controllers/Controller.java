@@ -354,14 +354,35 @@ public class Controller {
         GraphNode<LandmarkNode> startNode = findNodeByName(startLandmarkName);
         GraphNode<LandmarkNode> endNode = findNodeByName(endLandmarkName);
 
-        for(GraphNode<LandmarkNode> node : landmarkNodes){ System.out.println(node.data.getName()); }
         List<GraphNode<LandmarkNode>> shortestPath = GraphAPI.findCheapestPathDijkstra(startNode, endNode, landmarkNodes);
 
-       for (GraphNode<LandmarkNode> node : shortestPath) {
-            System.out.println(node.data.getName());
-        }
+        List<GraphNode<LandmarkNode>> waypoints = new ArrayList<>();
+        List<List<GraphNode<LandmarkNode>>> waypointPaths = new ArrayList<>();
 
-        visualizePathOnMap(shortestPath, Color.RED);
+        if (!waypointsListView.getItems().isEmpty()){
+         for(GraphNode<LandmarkNode> node : landmarkNodes){
+             if(node.data.getName().equals("WayPoint")){
+                 waypoints.add(node);
+             }
+         }
+         System.out.println("Waypoints added to their own list temporarily\n");
+         System.out.println(waypoints.size());
+
+         waypointPaths.add(GraphAPI.findCheapestPathDijkstra(startNode, waypoints.get(0),landmarkNodes));
+
+         for(int j = 0; j < waypoints.size()-1; j++){
+             waypointPaths.add(GraphAPI.findCheapestPathDijkstra(waypoints.get(j),waypoints.get(j+1),landmarkNodes));
+         }
+         waypointPaths.add(GraphAPI.findCheapestPathDijkstra(waypoints.get(waypoints.size()-1),endNode,landmarkNodes));
+
+         for(List<GraphNode<LandmarkNode>> list : waypointPaths){
+             visualizePathOnMap(list,Color.MEDIUMPURPLE);
+         }
+
+        }
+        else{
+            visualizePathOnMap(shortestPath, Color.RED);
+        }
 
     }
 
