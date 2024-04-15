@@ -124,7 +124,7 @@ public class GraphAPI {
                 }
             }
 
-            encountered.add(currentNode); // Mark current node as processed
+            encountered.add(currentNode);
         }
 
         return null; // If the end node was never reached, return null (no path found)
@@ -182,16 +182,15 @@ public class GraphAPI {
         return path;
     }
 
-    private static List<GraphNode<LandmarkNode>> reconstructPath(
-            Map<GraphNode<LandmarkNode>, GraphNode<LandmarkNode>> cameFrom, GraphNode<LandmarkNode> endNode) {
-        List<GraphNode<LandmarkNode>> path = new ArrayList<>(); // To store the path
-        GraphNode<LandmarkNode> current = endNode; // Start from the end node
-        while (current != null) { // Trace back from end to start
-            path.add(current); // Add current node to the path
-            current = cameFrom.get(current); // Move to the node it came from
+    private static List<GraphNode<LandmarkNode>> reconstructPath(Map<GraphNode<LandmarkNode>, GraphNode<LandmarkNode>> cameFrom, GraphNode<LandmarkNode> endNode) {
+        List<GraphNode<LandmarkNode>> path = new ArrayList<>();
+        GraphNode<LandmarkNode> current = endNode;
+        while (current != null) {
+            path.add(current);
+            current = cameFrom.get(current);
         }
-        Collections.reverse(path); // The path is constructed backwards, so reverse it
-        return path; // Return the path
+        Collections.reverse(path);
+        return path;
     }
 
 

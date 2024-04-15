@@ -29,7 +29,6 @@ public class Controller {
 
     public ImageView imageView = new ImageView();
     public List<GraphNode<LandmarkNode>> landmarkNodes = new ArrayList<>();
-    public List<Integer> imageArray = new ArrayList<>();
     public ListView<List<GraphNode<?>>> listViewDepthFS = new ListView<>();
     public TextField maxNumDepthFSRoutes = new TextField();
     public ListView<GraphNode<?>> waypointsListView = new ListView<>();
@@ -39,11 +38,14 @@ public class Controller {
     @FXML
     private ChoiceBox<String> endChoiceBox;
 
+    private List<GraphNode<LandmarkNode>> pixelPoints = new ArrayList<>(); // List of road points (white) for BFS
+
     public void initialize() throws IOException {
         loadData(); // Ensure this is called before trying to populate the ComboBoxes
         populateChoiceBoxes();
         plotPointsWithLabels();
         addLandmarkLinks();
+        processBitmap();
 
         //System.out.println("------------------------------------------");
        // List<List<GraphNode<?>>> allPaths = GraphAPI.findAllPathsDepthFirst(landmarkNodes.get(0), null, landmarkNodes.get(3).data);
@@ -126,8 +128,9 @@ public class Controller {
 
     }
 
+
+
     // Returns 2-3 close/nearby nodes for the purpose of incorporating waypoint into LandmarkNodes list etc
-    @Provisional
     public List<GraphNode<?>> findNearbyLandmarkNodes(GraphNode<?> nodeA){
         List<GraphNode<?>> nearbyNodes = new ArrayList<>();
         List<Integer> distances = new ArrayList<>();
@@ -165,40 +168,62 @@ public class Controller {
         return nearbyNodes;
     }
 
+    //TODO
     public void processBitmap() throws FileNotFoundException {
         Image bitmap = new Image(new FileInputStream("src/main/resources/com/example/parisroutefinder/bitmap-paris.bmp"));
         Image image = imageView.getImage();
         PixelReader pixelReader = bitmap.getPixelReader();
         WritableImage writableImage = new WritableImage((int) bitmap.getWidth(), (int) bitmap.getHeight());
         PixelWriter pixelWriter = writableImage.getPixelWriter();
-        //int[] imgArrray = new int[(int) image.getWidth() * (int) image.getHeight()];
 
         for (int ycoord = 0; ycoord < bitmap.getHeight(); ycoord++) {
 
             for (int xcoord = 0; xcoord < bitmap.getWidth(); xcoord++) {
                 Color colorOfPixel = pixelReader.getColor(xcoord, ycoord);
 
-                if ((!colorOfPixel.equals(Color.BLACK)) && (!colorOfPixel.equals(Color.WHITE))) {
+                if ((!colorOfPixel.equals(Color.BLACK))) {
                     pixelWriter.setColor(xcoord, ycoord, Color.WHITE);
-                    imageArray.add(0);
+                    pixelPoints.add(new GraphNode<>(new LandmarkNode("RoadPixel",new Pixel(xcoord,ycoord),3)));
+                }
+                else{
+                    pixelWriter.setColor(xcoord, ycoord, Color.BLACK);
+                    pixelPoints.add(new GraphNode<>(new LandmarkNode("B",new Pixel(xcoord,ycoord),3)));
                 }
 
             }
         }
-       // System.out.println(imageArray.toString());
-        System.out.println("Number of pixels in image: " + imageArray.size());
-        //imageView.setImage(writableImage);
-    }
 
-    public boolean areSimilar(Color color, Color color1){
-        boolean blue = (Math.abs(color.getBlue() - color1.getBlue()) <= 0.1);
-        boolean green = (Math.abs(color.getGreen() - color1.getGreen()) <= 0.1);
-        boolean red = (Math.abs(color.getRed() - color1.getRed()) <= 0.1);
-        boolean hue = (Math.abs(color.getHue() - color1.getHue()) < 0.1);
-        boolean sat = (Math.abs(color.getSaturation() - color1.getSaturation()) < 0.1);
-        boolean brightness = (Math.abs(color.getBrightness() - color1.getBrightness()) < 0.1);
-        // return (red && blue && green);
-        return sat && brightness && hue && green && red && blue;
+        for (int y = 0; y < imageView.getImage().getHeight(); y++)
+        {
+            for (int x = 0; x < imageView.getImage().getWidth(); x++)
+            {
+                int indexOfPixel = y * (int) imageView.getImage().getWidth() + x;
+
+                if(pixelPoints.get(indexOfPixel).data.getName().equals("RoadPixel")) {
+
+                    int rightIndex = indexOfPixel+1;
+                    int belowIndex = indexOfPixel+((int)image.getWidth());
+
+                    if((rightIndex < pixelPoints.size()) && (pixelPoints.get(rightIndex).data.getName().equals("RoadPixel"))){
+                        pixelPoints.get(indexOfPixel).connectToNodeUndirected(pixelPoints.get(rightIndex),GraphAPI.calculateCostOfEdge(pixelPoints.get(indexOfPixel),pixelPoints.get(rightIndex)));
+                    }
+                    if((belowIndex < pixelPoints.size()) && (pixelPoints.get(belowIndex).data.getName().equals("RoadPixel"))){
+                        pixelPoints.get(indexOfPixel).connectToNodeUndirected(pixelPoints.get(belowIndex),GraphAPI.calculateCostOfEdge(pixelPoints.get(indexOfPixel),pixelPoints.get(belowIndex)));
+                    }
+
+
+
+                }
+
+            }
+        }
+
+        //pixelPoints.removeIf(roadPixel -> !roadPixel.data.getName().equals("RoadPixel"));
+        List<GraphNode<LandmarkNode>> pathBetweenPixels = GraphAPI.findShortestPathBFS(pixelPoints.get(636),pixelPoints.get(407979));
+        visualizePathOnMap(pathBetweenPixels,Color.RED);
+        System.out.println("Number of pixel points in image: " + (pixelPoints.size()));
+        //imageView.setImage(writableImage);
+
     }
 
     public void resetMap() {
@@ -209,18 +234,7 @@ public class Controller {
         listViewDepthFS.getItems().clear();
         waypointsListView.getItems().clear();
         maxNumDepthFSRoutes.clear();
-//        for(GraphNode<LandmarkNode> node : landmarkNodes){
-//            if(node.data.getName().equals("WayPoint")){
-//                landmarkNodes.remove(node);
-//            }
-//            for(int i = 0; i < node.adjList.size()-1; i++){
-//                if(node.adjList.get(i).destNode.data.getName().equals("WayPoint")){
-//                    GraphLink<LandmarkNode> remove = node.adjList.remove(i);
-//                    node.adjList.remove(remove);
-//                }
-//            }
-//        }
-        // Load landmarks from CSV file again
+
         try {
             loadData();
         } catch (IOException e) {
