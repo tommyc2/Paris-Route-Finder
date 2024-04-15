@@ -1,5 +1,4 @@
 package models;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,10 +8,6 @@ public class GraphNode<T> {
 
     public GraphNode(T data) {
         this.data = data;
-    }
-
-    public void connectToNodeDirected(GraphNode<T> destNode, int cost) {
-        adjList.add(new GraphLink<>(destNode, cost));
     }
 
     public void connectToNodeUndirected(GraphNode<T> destNode, int cost) {

@@ -34,7 +34,7 @@
                   <Font size="15.0" />
                </font>
             </Text>
-            <Button layoutX="858.0" layoutY="486.0" mnemonicParsing="false" onAction="#findShortestPathBFSAction" style="-fx-background-radius: 15; -fx-background-color: blue; -fx-text-fill: white;" text="Breadth-First-Search" />
+            <Button layoutX="858.0" layoutY="486.0" mnemonicParsing="false" onAction="#generateShortestPathBreadthFS" style="-fx-background-radius: 15; -fx-background-color: blue; -fx-text-fill: white;" text="Breadth-First-Search" />
             <Text fill="WHITE" layoutX="858.0" layoutY="554.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generate most historical/cultural route">
                <font>
                   <Font size="15.0" />

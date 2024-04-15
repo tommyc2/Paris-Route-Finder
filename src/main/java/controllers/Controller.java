@@ -37,6 +37,8 @@ public class Controller {
     private ChoiceBox<String> startChoiceBox;
     @FXML
     private ChoiceBox<String> endChoiceBox;
+    
+    private List<GraphNode<LandmarkNode>> startAndEndNodesBreadthFS = new ArrayList<>();
 
     private List<GraphNode<LandmarkNode>> pixelPoints = new ArrayList<>(); // List of road points (white) for BFS
 
@@ -129,6 +131,43 @@ public class Controller {
     }
 
 
+    public List<GraphNode<?>> findNearbyRoadPoints(GraphNode<?> nodeA){
+        List<GraphNode<?>> nearbyNodes = new ArrayList<>();
+        List<Integer> distances = new ArrayList<>();
+
+        for(GraphNode<?> nodeB : this.pixelPoints){
+            if (nodeB != nodeA) {
+                distances.add(GraphAPI.calculateCostOfEdge((GraphNode<LandmarkNode>) nodeB, (GraphNode<LandmarkNode>) nodeA));
+            }
+        }
+        Collections.sort(distances);
+
+        GraphNode<?> adjacentNode1 = null;
+        GraphNode<?> adjacentNode2 = null;
+        GraphNode<?> adjacentNode3 = null;
+
+        for(GraphNode<?> node : this.pixelPoints){
+            int d = GraphAPI.calculateCostOfEdge((GraphNode<LandmarkNode>) node, (GraphNode<LandmarkNode>) nodeA);
+            if ((distances.get(0) == d) && adjacentNode1 == null && d != 0) {
+                adjacentNode1 = node;
+            }
+            if ((distances.get(1) == d) && adjacentNode2 == null && d != 0) {
+                adjacentNode2 = node;
+            }
+            if ((distances.get(2) == d) && adjacentNode3 == null && d != 0) {
+                adjacentNode3 = node;
+            }
+        }
+
+
+
+        nearbyNodes.add(adjacentNode1);
+        nearbyNodes.add(adjacentNode2);
+        nearbyNodes.add(adjacentNode3);
+
+        return nearbyNodes;
+    }
+
 
     // Returns 2-3 close/nearby nodes for the purpose of incorporating waypoint into LandmarkNodes list etc
     public List<GraphNode<?>> findNearbyLandmarkNodes(GraphNode<?> nodeA){
@@ -183,10 +222,12 @@ public class Controller {
 
                 if ((!colorOfPixel.equals(Color.BLACK))) {
                     pixelWriter.setColor(xcoord, ycoord, Color.WHITE);
+                    // add new road pixel node
                     pixelPoints.add(new GraphNode<>(new LandmarkNode("RoadPixel",new Pixel(xcoord,ycoord),3)));
                 }
                 else{
                     pixelWriter.setColor(xcoord, ycoord, Color.BLACK);
+                    // add black pixels too for ease of use with indexes
                     pixelPoints.add(new GraphNode<>(new LandmarkNode("B",new Pixel(xcoord,ycoord),3)));
                 }
 
@@ -204,9 +245,11 @@ public class Controller {
                     int rightIndex = indexOfPixel+1;
                     int belowIndex = indexOfPixel+((int)image.getWidth());
 
+                    // If pixel to the right is a white pixel, link up with it
                     if((rightIndex < pixelPoints.size()) && (pixelPoints.get(rightIndex).data.getName().equals("RoadPixel"))){
                         pixelPoints.get(indexOfPixel).connectToNodeUndirected(pixelPoints.get(rightIndex),GraphAPI.calculateCostOfEdge(pixelPoints.get(indexOfPixel),pixelPoints.get(rightIndex)));
                     }
+                    // If pixel below is white, link up with it
                     if((belowIndex < pixelPoints.size()) && (pixelPoints.get(belowIndex).data.getName().equals("RoadPixel"))){
                         pixelPoints.get(indexOfPixel).connectToNodeUndirected(pixelPoints.get(belowIndex),GraphAPI.calculateCostOfEdge(pixelPoints.get(indexOfPixel),pixelPoints.get(belowIndex)));
                     }
@@ -218,9 +261,6 @@ public class Controller {
             }
         }
 
-        //pixelPoints.removeIf(roadPixel -> !roadPixel.data.getName().equals("RoadPixel"));
-        List<GraphNode<LandmarkNode>> pathBetweenPixels = GraphAPI.findShortestPathBFS(pixelPoints.get(636),pixelPoints.get(407979));
-        visualizePathOnMap(pathBetweenPixels,Color.RED);
         System.out.println("Number of pixel points in image: " + (pixelPoints.size()));
         //imageView.setImage(writableImage);
 
@@ -234,6 +274,7 @@ public class Controller {
         listViewDepthFS.getItems().clear();
         waypointsListView.getItems().clear();
         maxNumDepthFSRoutes.clear();
+        startAndEndNodesBreadthFS.clear();
 
         try {
             loadData();
@@ -400,22 +441,44 @@ public class Controller {
 
     }
 
+    public void generateShortestPathBreadthFS(ActionEvent event){
+           List<GraphNode<LandmarkNode>> path = GraphAPI.findShortestPathBFS(startAndEndNodesBreadthFS.get(0),startAndEndNodesBreadthFS.get(1));
+           visualizePathOnMap(path,Color.RED);
+    }
+
     @FXML
-    private void findShortestPathBFSAction(ActionEvent event) {
-        String startLandmarkName = startChoiceBox.getValue();
-        String endLandmarkName = endChoiceBox.getValue();
+    public void findShortestPathBFS(MouseEvent event) {
+        if (startAndEndNodesBreadthFS.size() < 3) {
+            Circle marker = new Circle(event.getX(), event.getY(), 3);
+            marker.setLayoutX(imageView.getLayoutX());
+            marker.setLayoutY(imageView.getLayoutY());
+            marker.setFill(Color.GREY);
+            marker.setStrokeWidth(3.5);
+            marker.setStroke(Color.DARKBLUE);
+            marker.setCenterX(event.getX());
+            marker.setCenterY(event.getY());
+            AnchorPane drawingArea = (AnchorPane) imageView.getParent();
+            drawingArea.getChildren().add(marker);
 
-        // Assuming you have a method findNodeByName in your controller
-        GraphNode<LandmarkNode> startNode = findNodeByName(startLandmarkName);
-        GraphNode<LandmarkNode> endNode = findNodeByName(endLandmarkName);
+            Pixel pixel = new Pixel((int) event.getX(), (int) event.getY());
+            GraphNode<LandmarkNode> newNode = new GraphNode<>(new LandmarkNode("RoadPixel", pixel, 3));
 
-        if (startNode == null || endNode == null) {
-            System.out.println("Start or End node not found.");
-            return;
+            pixelPoints.add(newNode);
+            startAndEndNodesBreadthFS.add(newNode);
+
+            List<GraphNode<?>> listOfNearbyRoadNodes = findNearbyRoadPoints(newNode);
+
+            System.out.println("Number of nearby nodes: " + listOfNearbyRoadNodes.size() + "\n");
+
+            System.out.print(listOfNearbyRoadNodes);
+
+            for (GraphNode<?> nearbyNode : listOfNearbyRoadNodes) {
+                if (nearbyNode != null) newNode.connectToNodeUndirected((GraphNode<LandmarkNode>) nearbyNode, GraphAPI.calculateCostOfEdge(newNode, (GraphNode<LandmarkNode>) nearbyNode));
+            }
+            boolean isRemoved = pixelPoints.remove(newNode);
+            if(isRemoved) pixelPoints.add(newNode);
+
         }
-
-        List<GraphNode<LandmarkNode>> path = GraphAPI.findShortestPathBFS(startNode, endNode);
-        visualizePathOnMap(path,Color.RED);
     }
 
 
@@ -435,7 +498,6 @@ public class Controller {
             return;
         }
 
-        // Assuming imageView is correctly placed within the AnchorPane
         double imageViewX = imageView.getLayoutX();
         double imageViewY = imageView.getLayoutY();
 
@@ -460,6 +522,10 @@ public class Controller {
 
     @Provisional
     public void addWayPoint(MouseEvent event) {
+        if(event.getClickCount() == 1) {
+            findShortestPathBFS(event);
+        }
+
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2){
             Circle dot = new Circle(event.getX(), event.getY(),4);
             dot.setLayoutX(imageView.getLayoutX());
