@@ -1,6 +1,7 @@
 module com.example.parisroutefinder {
     requires javafx.controls;
     requires javafx.fxml;
+    requires junit;
 
     exports main;
     opens main to javafx.fxml;
@@ -10,4 +11,7 @@ module com.example.parisroutefinder {
     opens models to javafx.fxml;
     exports utils;
     opens utils to javafx.fxml;
+
+
+
 }
