@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
@@ -447,20 +448,20 @@ public class Controller {
     }
 
     @FXML
-    public void findShortestPathBFS(MouseEvent event) {
+    public void findShortestPathBFS(int x, int y) {
         if (startAndEndNodesBreadthFS.size() < 3) {
-            Circle marker = new Circle(event.getX(), event.getY(), 3);
+            Circle marker = new Circle(x, y, 3);
             marker.setLayoutX(imageView.getLayoutX());
             marker.setLayoutY(imageView.getLayoutY());
             marker.setFill(Color.GREY);
             marker.setStrokeWidth(3.5);
             marker.setStroke(Color.DARKBLUE);
-            marker.setCenterX(event.getX());
-            marker.setCenterY(event.getY());
+            marker.setCenterX(x);
+            marker.setCenterY(y);
             AnchorPane drawingArea = (AnchorPane) imageView.getParent();
             drawingArea.getChildren().add(marker);
 
-            Pixel pixel = new Pixel((int) event.getX(), (int) event.getY());
+            Pixel pixel = new Pixel(x,y);
             GraphNode<LandmarkNode> newNode = new GraphNode<>(new LandmarkNode("RoadPixel", pixel, 3));
 
             pixelPoints.add(newNode);
@@ -520,14 +521,14 @@ public class Controller {
         }
     }
 
-    @Provisional
+    //TODO - fix error with waypoints not being able to be pressed (e.g. maybe middle click etc)
     public void addWayPoint(MouseEvent event) {
-        if(event.getClickCount() == 1) {
-            findShortestPathBFS(event);
+        if(event.getClickCount() == 1 && event.getButton()==MouseButton.MIDDLE) {
+            findShortestPathBFS((int)event.getX(),(int)event.getY());
         }
 
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2){
-            Circle dot = new Circle(event.getX(), event.getY(),4);
+            Circle dot = new Circle((int)event.getX(), (int)event.getY(),4);
             dot.setLayoutX(imageView.getLayoutX());
             dot.setLayoutY(imageView.getLayoutY());
             dot.setFill(Color.WHITE);
@@ -562,7 +563,7 @@ public class Controller {
                 waypointNode.connectToNodeUndirected((GraphNode<LandmarkNode>) node,GraphAPI.calculateCostOfEdge(waypointNode,(GraphNode<LandmarkNode>) node));
             }
             boolean waypointRemoved = landmarkNodes.remove(waypointNode);
-            if (waypointRemoved) landmarkNodes.add(waypointNode);
+            if (waypointRemoved) System.out.println("Waypoint removed"); landmarkNodes.add(waypointNode); System.out.println("Waypoint added again");
 
         }
 
@@ -575,7 +576,7 @@ public class Controller {
             for(int j = 0; j < lmnode.adjList.size()-1; j++){
                 if(lmnode.adjList.get(j).destNode.data.getName().equals(nodeToAvoid != null ? nodeToAvoid.data.getName() : null)){
                     boolean removedPoint = lmnode.adjList.remove(lmnode.adjList.get(j));
-                    if (removedPoint) System.out.println("REmoved");
+                    if (removedPoint) System.out.println("Removed: " + lmnode.adjList.get(j) +"from " +lmnode.data.getName());
                 }
             }
         }
