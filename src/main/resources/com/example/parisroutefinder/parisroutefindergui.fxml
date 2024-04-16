@@ -13,7 +13,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="850.0" prefWidth="1200.0" style="-fx-background-color: #292F36;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.Controller">
    <top>
-      <AnchorPane prefHeight="850.0" prefWidth="1200.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="850.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(to top right, #000025, #2E2D42);" BorderPane.alignment="CENTER">
          <children>
             <ImageView fx:id="imageView" fitHeight="571.0" fitWidth="800.0" layoutX="14.0" layoutY="42.0" onMouseClicked="#addWayPoint" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -34,29 +34,29 @@
                   <Font size="15.0" />
                </font>
             </Text>
-            <Button layoutX="858.0" layoutY="486.0" mnemonicParsing="false" onAction="#generateShortestPathBreadthFS" style="-fx-background-radius: 15; -fx-background-color: blue; -fx-text-fill: white;" text="Breadth-First-Search" />
+            <Button layoutX="858.0" layoutY="486.0" mnemonicParsing="false" onAction="#generateShortestPathBreadthFS" style="-fx-background-radius: 15; -fx-background-color: linear-gradient(to top right, #1882DE, #001693);; -fx-text-fill: white;" text="Breadth-First-Search" />
             <Text fill="WHITE" layoutX="858.0" layoutY="554.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generate most historical/cultural route">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
-            <Button layoutX="1020.0" layoutY="486.0" mnemonicParsing="false" onAction="#findShortestPathDijkstra" style="-fx-background-color: purple; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
+            <Button layoutX="1020.0" layoutY="486.0" mnemonicParsing="false" onAction="#findShortestPathDijkstra" style="-fx-background-color: linear-gradient(to top right, #B018DE, #510094);; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
             <Button layoutX="859.0" layoutY="565.0" mnemonicParsing="false" onAction="#generateMostHistoricalRoute" style="-fx-background-color: Green; -fx-background-radius: 15; -fx-text-fill: white;" text="Dijkstra's Algo" />
             <Button layoutX="14.0" layoutY="622.0" mnemonicParsing="false" onAction="#resetMap" style="-fx-background-color: white; -fx-text-fill: black; -fx-background-radius: 15;" text="Reset Map" />
             <Text fill="WHITE" layoutX="858.0" layoutY="152.0" strokeType="OUTSIDE" strokeWidth="0.0" />
-            <Button layoutX="859.0" layoutY="196.0" mnemonicParsing="false" onAction="#generateDepthFSRoutes" prefHeight="32.0" prefWidth="218.0" style="-fx-background-color: yellow; -fx-text-fill: black; -fx-background-radius: 15;" text="Generate Depth-FS routes" textFill="WHITE" />
-            <ListView fx:id="listViewDepthFS" layoutX="859.0" layoutY="270.0" onMouseClicked="#drawLinesBetweenLandmarkNodes" prefHeight="164.0" prefWidth="257.0" />
-            <Text fill="WHITE" layoutX="858.0" layoutY="265.0" strokeType="OUTSIDE" strokeWidth="0.0" text="List of Depth-FS routes ">
+            <Button layoutX="859.0" layoutY="196.0" mnemonicParsing="false" onAction="#generateDepthFSRoutes" prefHeight="32.0" prefWidth="218.0" style="-fx-background-color: linear-gradient(to top right, #F5E507, #FCB800); -fx-text-fill: black; -fx-background-radius: 15;" text="Generate Depth-FS routes" textFill="WHITE" />
+            <ListView fx:id="listViewDepthFS" layoutX="859.0" layoutY="272.0" onMouseClicked="#drawLinesBetweenLandmarkNodes" prefHeight="164.0" prefWidth="257.0" style="-fx-background-radius: 15;" />
+            <Text fill="WHITE" layoutX="859.0" layoutY="265.0" strokeType="OUTSIDE" strokeWidth="0.0" text="List of Depth-FS routes ">
                <font>
                   <Font size="15.0" />
                </font>
             </Text>
-            <TextField fx:id="maxNumDepthFSRoutes" layoutX="1071.0" layoutY="155.0" prefHeight="25.0" prefWidth="41.0" />
+            <TextField fx:id="maxNumDepthFSRoutes" layoutX="1092.0" layoutY="155.0" prefHeight="25.0" prefWidth="41.0" />
             <Text fill="WHITE" layoutX="860.0" layoutY="172.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Max Number Of Routes:">
                <font>
                   <Font size="15.0" />
                </font></Text>
-            <ListView fx:id="waypointsListView" layoutX="852.0" layoutY="646.0" prefHeight="164.0" prefWidth="290.0" />
+            <ListView fx:id="waypointsListView" layoutX="852.0" layoutY="646.0" prefHeight="164.0" prefWidth="290.0" style="-fx-background-radius: 10;" />
             <Text fill="WHITE" layoutX="851.0" layoutY="641.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waypoints">
                <font>
                   <Font size="15.0" />
@@ -69,7 +69,7 @@
             </Text>
             <ChoiceBox fx:id="avoidPointChoiceBox" layoutX="961.0" layoutY="118.0" prefWidth="150.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
             <Button layoutX="1116.0" layoutY="117.0" mnemonicParsing="false" onAction="#avoidPointInPaths" style="-fx-background-color: lightblue; -fx-background-radius: 3;" text="OK" />
-            <Button layoutX="312.0" layoutY="636.0" mnemonicParsing="false" onAction="#displayLinksWithLines" style="-fx-background-radius: 15; -fx-background-color: yellow; -fx-text-fill: black;" text="Display Connections">
+            <Button layoutX="312.0" layoutY="636.0" mnemonicParsing="false" onAction="#displayLinksWithLines" style="-fx-background-radius: 15; -fx-background-color: linear-gradient(to top right, #F5E507, #FCB800);; -fx-text-fill: black;" text="Display Connections">
                <font>
                   <Font name="Tlwg Mono Bold" size="16.0" />
                </font>
