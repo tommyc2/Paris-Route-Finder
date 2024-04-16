@@ -363,6 +363,7 @@ public class Controller {
 
                 }
             }
+
     }
 
     public void generateDepthFSRoutes(ActionEvent actionEvent) {
@@ -521,7 +522,6 @@ public class Controller {
         }
     }
 
-    //TODO - fix error with waypoints not being able to be pressed (e.g. maybe middle click etc)
     public void addWayPoint(MouseEvent event) {
         if(event.getClickCount() == 1 && event.getButton()==MouseButton.MIDDLE) {
             findShortestPathBFS((int)event.getX(),(int)event.getY());
@@ -571,15 +571,29 @@ public class Controller {
 
     public void avoidPointInPaths(ActionEvent actionEvent) {
         GraphNode<LandmarkNode> nodeToAvoid = findNodeByName(avoidPointChoiceBox.getValue());
-        
-        for(GraphNode<LandmarkNode> lmnode : landmarkNodes){
-            for(int j = 0; j < lmnode.adjList.size()-1; j++){
-                if(lmnode.adjList.get(j).destNode.data.getName().equals(nodeToAvoid != null ? nodeToAvoid.data.getName() : null)){
-                    boolean removedPoint = lmnode.adjList.remove(lmnode.adjList.get(j));
-                    if (removedPoint) System.out.println("Removed: " + lmnode.adjList.get(j) +"from " +lmnode.data.getName());
+
+//        for(GraphNode<LandmarkNode> lmnode : landmarkNodes){
+//            for(int j = 0; j < lmnode.adjList.size(); j++){
+//                if(lmnode.adjList.get(j).destNode.data.getName().equals(nodeToAvoid != null ? nodeToAvoid.data.getName() : null)){
+//                    boolean removedPoint = lmnode.adjList.remove(lmnode.adjList.get(j));
+//                    if (removedPoint) System.out.println("Removed: " + lmnode.adjList.get(j) +"from " +lmnode.data.getName());
+//                }
+//            }
+//        }
+
+        for (GraphNode<LandmarkNode> node : landmarkNodes)
+        {
+            Iterator<GraphLink<LandmarkNode>> iterator = node.adjList.iterator();
+            while (iterator.hasNext())
+            {
+                GraphLink<LandmarkNode> adjacentNode = iterator.next();
+                if (adjacentNode.destNode.data.getName() == (nodeToAvoid != null ? nodeToAvoid.data.getName() : null)) {
+                    iterator.remove();
+                    System.out.println("Removed " + adjacentNode.destNode.data.getName());
                 }
             }
         }
+
         landmarkNodes.remove(nodeToAvoid);
     }
 
